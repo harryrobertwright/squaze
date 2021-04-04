@@ -65,15 +65,3 @@ class Game:
             self.player.x_pos = 0
             self.player.y_pos = 845
             self.obstacles.clear()
-
-    # def pulsate(self):
-    #     for obstacle in self.obstacles:
-    #         obstacle.jitter(10)
-    #         # obstacle.colour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    #         # if random.choice(range(0,10)) == 5:
-    #         #     increment = random.randint(-5,5)
-    #         #     # LOOP EACH ATTRIBUTE INSTEAD BUNCHING THEM All
-    #         #     test_rect = obstacle.rect = pygame.Rect(obstacle.x_pos + increment, obstacle.y_pos + increment, obstacle.width + increment, obstacle.height + increment)
-    #         #     if self.collide_check(test_rect) == False:
-    #         #         obstacle.rect = test_rect
-    #         #         self.player.rect = pygame.Rect(self.player.x_pos, self.player.y_pos, self.player.width, self.player.height)
