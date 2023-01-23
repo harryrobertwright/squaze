@@ -1,18 +1,24 @@
 from colour import Colour
 import pygame
-from pygame.locals import *
-import math
+from dataclasses import dataclass
+from functools import cached_property
 
+pygame.font.init()
+
+
+@dataclass
 class Screen:
-    def __init__(self, WIDTH=1000, HEIGHT=900, background_colour=Colour.WHITE, font_type='fonts/OpenSans-Bold.ttf', font_dimensions=36, font_colour=Colour.BLACK, clock_tick=60):
-        self.WIDTH = WIDTH
-        self.HEIGHT = HEIGHT
-        self.background_colour = background_colour
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        self.font = pygame.font.Font(font_type, font_dimensions)
-        self.font_colour = font_colour
-        self.clock = pygame.time.Clock()
-        self.clock_tick = clock_tick
+    width: int = 1000
+    height: int = 900
+    background_colour: tuple[tuple[int, int, int]] = (Colour.WHITE.value,)
+    font: pygame.font.Font = pygame.font.Font("fonts/OpenSans-Bold.ttf", 36)
+    font_colour: tuple[int, int, int] = (Colour.BLACK.value,)
+    clock: pygame.time.Clock = pygame.time.Clock()
+    clock_tick: int = 60
+
+    @cached_property
+    def screen(self):
+        return pygame.display.set_mode((self.width, self.height))
 
     def refresh_background(self):
         """Fills the screen with the background colour"""
@@ -23,12 +29,11 @@ class Screen:
             pygame.draw.rect(self.screen, obstacle.colour, obstacle.rect)
 
     def draw_player(self, player):
-        pygame.draw.rect(self.screen, player.colour, player.rect)
+        pygame.draw.rect(self.screen, player.colour.value, player.rect)
 
     def draw_round(self, round):
-        text = self.font.render(f'Round: {round}', True, self.font_colour)
+        text = self.font.render(f"Round: {round}", True, self.font_colour)
         self.screen.blit(text, (800, 850))
-
 
     def update_screen(self, player, obstacles, round):
         self.refresh_background()

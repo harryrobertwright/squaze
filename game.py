@@ -1,60 +1,54 @@
 from screen import Screen
 from objects import *
 import random
+from dataclasses import dataclass, field
 
+
+@dataclass
 class Game:
-    def __init__(self):
-        self.obstacles = []
-        self.player = Player()
-        self.round = 0
-        self.screen = Screen()
+    obstacles: list = field(default_factory=list)
+    player: Player = Player()
+    round: int = 0
+    screen: Screen = Screen()
 
     def collide_check(self, test_rect):
-        flag = False
         tolerance = 1
-        for obstacle in self.obstacles:
-            test_obstacle_rect = (obstacle.rect[0] - tolerance, obstacle.rect[1] - tolerance, obstacle.rect[2] - tolerance, obstacle.rect[3] - tolerance)
-            if test_rect.colliderect(test_obstacle_rect) == True:
-                flag = True
 
-        return flag
+        return any(
+            test_rect.colliderect(tuple(obstacle.rect[i] - tolerance for i in range(4)))
+            for obstacle in self.obstacles
+        )
 
     def boundary_check(self, test_rect):
-        flag = True
-        if test_rect[0] > (self.screen.WIDTH - test_rect[2]):
-            flag = False
-        if test_rect[0] < 0:
-            flag = False
-        if test_rect[1] > (self.screen.HEIGHT - test_rect[3]):
-            flag = False
-        return flag
+        return 0 <= test_rect[0] < (
+            self.screen.width - test_rect[2]
+        ) and 0 <= test_rect[1] < (self.screen.height - test_rect[3])
 
     def round_completed(self):
-        if self.player.y_pos - self.player.height <= 0:
-            return True
-        else:
-            return False
+        return self.player.y_pos - self.player.height <= 0
 
     def update_player_pos(self, x_pos=0, y_pos=0):
-        test_rect = pygame.Rect(self.player.x_pos + x_pos, self.player.y_pos + y_pos, self.player.width, self.player.height)
-        if self.collide_check(test_rect) == False:
-            if not self.boundary_check(test_rect) == False:
-                self.player.x_pos += x_pos
-                self.player.y_pos += y_pos
-                self.player.rect = test_rect
-
+        test_rect = pygame.Rect(
+            self.player.x_pos + x_pos,
+            self.player.y_pos + y_pos,
+            self.player.width,
+            self.player.height,
+        )
+        if not self.collide_check(test_rect) and self.boundary_check(test_rect):
+            self.player.x_pos += x_pos
+            self.player.y_pos += y_pos
+            self.player.rect = test_rect
 
     def spawn_obstacles(self):
         rects = []
-        for x in range(0, self.get_difficulty()):
+        for _ in range(self.get_difficulty()):
             obstacle = Obstacle()
             if obstacle.rect.collidelist(rects) == -1:
                 self.obstacles.append(obstacle)
                 rects.append(obstacle.rect)
 
     def get_difficulty(self):
-        obstacle_number = self.round * 10
-        return obstacle_number
+        return self.round * 10
 
     def new_round(self):
         if not self.obstacles:
