@@ -2,20 +2,20 @@ import sys
 
 import pygame
 
+from constants import Direction
 from game import Game
 from screen import Screen
 
 pygame.init()
 
+
 screen = Screen()
 game = Game()
 
-run = True
 
+pygame.time.get_ticks()
 
-start_ticks = pygame.time.get_ticks()  # starter tick
-
-while run:
+while True:
 
     game.new_round()
 
@@ -26,15 +26,18 @@ while run:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_UP]:
-        game.update_player_pos(y_pos=-5)
+        game.move_player(Direction.UP)
 
     if keys[pygame.K_DOWN]:
-        game.update_player_pos(y_pos=5)
+        game.move_player(Direction.DOWN)
 
     if keys[pygame.K_LEFT]:
-        game.update_player_pos(x_pos=-5)
+        game.move_player(Direction.LEFT)
 
     if keys[pygame.K_RIGHT]:
-        game.update_player_pos(x_pos=5)
+        game.move_player(Direction.RIGHT)
 
-    screen.update(game.player, game.obstacles, game.round)
+    if keys[pygame.K_SPACE]:
+        game.destroy_obstacles()
+
+    screen.update(game.player, game.obstacles, game.round, game.bombs)
